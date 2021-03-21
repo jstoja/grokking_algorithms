@@ -35,6 +35,13 @@ fn selection_sort<T: Copy + Ord>(list: &mut Vec<T>) -> Vec<T> {
     sorted
 }
 
+fn factorial(n: u8) -> u32 {
+    match n.cmp(&1) {
+        Ordering::Equal | Ordering::Less => 1,
+        _ => n as u32 * factorial(n-1)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -60,5 +67,10 @@ mod tests {
             selection_sort(vec![2,3,4,1,7,4,5].as_mut()),
             vec![1,2,3,4,4,5,7]
         )
+    }
+
+    #[test]
+    fn test_factorial() {
+        assert_eq!(factorial(5), 120)
     }
 }
