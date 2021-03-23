@@ -1,4 +1,5 @@
 use std::{cmp::Ordering, fmt::Debug, ops::Add, usize};
+use rand::{Rng, thread_rng};
 
 fn binary_search(l: &[i32], item: &i32) -> Result<i32, &'static str> {
     let mut low: i32 = 0;
@@ -99,11 +100,13 @@ fn quicksort<T: Ord + Clone + Debug>(list: &Vec<T>) -> Vec<T> {
         1 => list.to_vec(),
         2 if list[0] >= list[1] => vec![list[1].clone(), list[0].clone()], 
         2 if list[0] < list[1] => list.to_vec(), 
-        _ => {
-            // Use a naive pivot so we don't have to build the lists to filter without the pivot
-            let pivot = list[0].clone();
-            let smaller = list[1..].iter().filter(|&i| i <= &pivot).cloned().collect::<Vec<_>>();
-            let higher = list[1..].iter().filter(|&i| i > &pivot).cloned().collect::<Vec<_>>();
+        s @ _ => {
+            let pivot_idx = thread_rng().gen_range(0..s);
+            let pivot = list[pivot_idx].clone();
+            let mut to_sort = list.clone();
+            to_sort.remove(pivot_idx);
+            let smaller = to_sort.iter().filter(|&i| i <= &pivot).cloned().collect::<Vec<_>>();
+            let higher = to_sort.iter().filter(|&i| i > &pivot).cloned().collect::<Vec<_>>();
             [quicksort(&smaller).to_vec(), quicksort(&higher).to_vec()].join(&pivot)
         }
     }
