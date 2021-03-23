@@ -66,11 +66,10 @@ fn rec_len<T>(list: &[T]) -> usize {
     }
 }
 
-fn rec_max<T: Ord + Clone + Copy>(list: &[T]) -> T {
+fn rec_max<T: Ord + Clone>(list: &[T]) -> T {
     match list.len() {
         1 => return list[0].clone(),
-        2 => return list[0].max(list[1]).clone(),
-        s @ _ => return rec_max(&list[..s/2]).max(rec_max(&list[s/2..])),
+        s @ _ => rec_max(&list[..s/2]).max(rec_max(&list[s/2..])),
     }
 }
 
@@ -90,6 +89,22 @@ fn rec_binary_search<T: Ord + Clone + Debug>(list: &[T], item: T) -> Result<usiz
             } else {
                 left
             }
+        }
+    }
+}
+
+fn quicksort<T: Ord + Clone + Debug>(list: &Vec<T>) -> Vec<T> {
+    match list.len() {
+        0 => vec![],
+        1 => list.to_vec(),
+        2 if list[0] >= list[1] => vec![list[1].clone(), list[0].clone()], 
+        2 if list[0] < list[1] => list.to_vec(), 
+        _ => {
+            // Use a naive pivot so we don't have to build the lists to filter without the pivot
+            let pivot = list[0].clone();
+            let smaller = list[1..].iter().filter(|&i| i <= &pivot).cloned().collect::<Vec<_>>();
+            let higher = list[1..].iter().filter(|&i| i > &pivot).cloned().collect::<Vec<_>>();
+            [quicksort(&smaller).to_vec(), quicksort(&higher).to_vec()].join(&pivot)
         }
     }
 }
@@ -158,5 +173,13 @@ mod tests {
         for test in tests.iter() {
             assert_eq!(rec_binary_search(&data, test.0), test.1);    
         }
+    }
+
+    #[test]
+    fn test_quicksort() {
+        assert_eq!(
+            quicksort(&vec![2,3,4,1,7,4,5]),
+            vec![1,2,3,4,4,5,7]
+        )
     }
 }
