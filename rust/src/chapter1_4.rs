@@ -1,7 +1,7 @@
 use std::{cmp::Ordering, fmt::Debug, ops::Add, usize};
 use rand::{Rng, thread_rng};
 
-fn binary_search(l: &[i32], item: &i32) -> Result<i32, &'static str> {
+pub fn binary_search(l: &[i32], item: &i32) -> Result<i32, &'static str> {
     let mut low: i32 = 0;
     let mut high: i32 = (l.len() as i32) -1;
     let mut mid;
@@ -21,7 +21,7 @@ fn binary_search(l: &[i32], item: &i32) -> Result<i32, &'static str> {
     Err("Guess not found")
 }
 
-fn selection_sort<T: Copy + Ord>(list: Vec<T>) -> Vec<T> {
+pub fn selection_sort<T: Copy + Ord>(list: Vec<T>) -> Vec<T> {
     let mut list = list;
     let mut sorted: Vec<T> = Vec::new();
     for _ in 0..list.len() {
@@ -36,14 +36,14 @@ fn selection_sort<T: Copy + Ord>(list: Vec<T>) -> Vec<T> {
     sorted
 }
 
-fn factorial(n: u8) -> u32 {
+pub fn factorial(n: u8) -> u32 {
     match n.cmp(&1) {
         Ordering::Equal | Ordering::Less => 1,
         _ => n as u32 * factorial(n-1)
     }
 }
 
-fn land_split(w: u32, h: u32) -> u32 {
+pub fn land_split(w: u32, h: u32) -> u32 {
     if w.min(h) == 0 || w == h {
         w.max(h)
     } else if w > h {
@@ -53,28 +53,28 @@ fn land_split(w: u32, h: u32) -> u32 {
     }
 }
 
-fn rec_sum<T: Clone + Add<Output = T>>(list: &[T]) -> T {
+pub fn rec_sum<T: Clone + Add<Output = T>>(list: &[T]) -> T {
     match list.len() {
         1 => list[0].clone(),
         _ => list[0].clone() + rec_sum(&list[1..])
     }
 }
 
-fn rec_len<T>(list: &[T]) -> usize {
+pub fn rec_len<T>(list: &[T]) -> usize {
     match list {
         [] => 0,
         _ => 1 + rec_len(&list[1..])
     }
 }
 
-fn rec_max<T: Ord + Clone>(list: &[T]) -> T {
+pub fn rec_max<T: Ord + Clone>(list: &[T]) -> T {
     match list.len() {
         1 => return list[0].clone(),
         s @ _ => rec_max(&list[..s/2]).max(rec_max(&list[s/2..])),
     }
 }
 
-fn rec_binary_search<T: Ord + Clone + Debug>(list: &[T], item: T) -> Result<usize, &'static str> {
+pub fn rec_binary_search<T: Ord + Clone + Debug>(list: &[T], item: T) -> Result<usize, &'static str> {
     match list.len() {
         0 => return Err("Empty"),
         1 if list[0] == item => Ok(0),
@@ -94,7 +94,7 @@ fn rec_binary_search<T: Ord + Clone + Debug>(list: &[T], item: T) -> Result<usiz
     }
 }
 
-fn quicksort<T: Ord + Clone + Debug>(list: &Vec<T>) -> Vec<T> {
+pub fn quicksort<T: Ord + Clone + Debug>(list: &Vec<T>) -> Vec<T> {
     match list.len() {
         0 => vec![],
         1 => list.to_vec(),
@@ -109,80 +109,5 @@ fn quicksort<T: Ord + Clone + Debug>(list: &Vec<T>) -> Vec<T> {
             let higher = to_sort.iter().filter(|&i| i > &pivot).cloned().collect::<Vec<_>>();
             [quicksort(&smaller).to_vec(), quicksort(&higher).to_vec()].join(&pivot)
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_binary_search() {
-        let data = vec![1, 3, 5, 7, 9];
-        let tests = vec![
-            (3, Ok(1)),
-            (-1, Err("Guess not found")),
-            (2, Err("Guess not found")),
-            (9, Ok(4)),
-        ];
-        for test in tests.iter() {
-            assert_eq!(binary_search(&data, &test.0), test.1);    
-        }
-        
-    }
-
-    #[test]
-    fn test_selection_sort() {
-        assert_eq!(
-            selection_sort(vec![2,3,4,1,7,4,5]),
-            vec![1,2,3,4,4,5,7]
-        )
-    }
-
-    #[test]
-    fn test_factorial() {
-        assert_eq!(factorial(5), 120)
-    }
-
-    #[test]
-    fn test_land_split() {
-        assert_eq!(land_split(1680, 640), 80)
-    }
-
-    #[test]
-    fn test_rec_sum() {
-        assert_eq!(rec_sum(&vec![1,2,3]), 6);
-    }
-
-    #[test]
-    fn test_rec_len() {
-        assert_eq!(rec_len(&vec![1,2,3,4]), 4)
-    }
-
-    #[test]
-    fn test_rec_max() {
-        assert_eq!(rec_max(&vec![1,5,4,2,3]), 5)
-    }
-
-    #[test]
-    fn test_rec_binary_search() {
-        let data = vec![1, 3, 5, 7, 9];
-        let tests = vec![
-            (3, Ok(1)),
-            (-1, Err("Guess not found")),
-            (2, Err("Guess not found")),
-            (9, Ok(4)),
-        ];
-        for test in tests.iter() {
-            assert_eq!(rec_binary_search(&data, test.0), test.1);    
-        }
-    }
-
-    #[test]
-    fn test_quicksort() {
-        assert_eq!(
-            quicksort(&vec![2,3,4,1,7,4,5]),
-            vec![1,2,3,4,4,5,7]
-        )
     }
 }
